@@ -2,7 +2,7 @@
 #define MAIN_H
 
 int _putchar(char c);
-int _islower(int c); /* Function prototype for _islower */
+int _isalpha(int c); /* Function prototype for _isalpha */
 
 #endif /* MAIN_H */
 
