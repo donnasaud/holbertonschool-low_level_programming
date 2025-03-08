@@ -1,7 +1,7 @@
 #include "main.h"
 
 /**
- * print_times_table - Prints the `n` times table, starting from 0.
+ * print_times_table - Prints the `n` times table, starting with 0.
  * @n: The number to generate the times table for.
  *
  * Return: void
@@ -29,7 +29,7 @@ void print_times_table(int n)
 				_putchar(',');
 				_putchar(' ');
 
-				/* Format spacing correctly for numbers */
+				/* Proper spacing for numbers */
 				if (product < 10)
 				{
 					_putchar(' ');
