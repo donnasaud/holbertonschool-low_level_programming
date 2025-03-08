@@ -2,7 +2,7 @@
 #define MAIN_H
 
 int _putchar(char c);
-int _abs(int n); /* Function prototype for _abs */
+int print_last_digit(int n);
 
-#endif /* MAIN_H */
+#endif
 
