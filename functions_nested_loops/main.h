@@ -1,8 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-int _putchar(char c); /* Function to print a character */
-void jack_bauer(void); /* Function prototype */
+int _putchar(char c);
+void times_table(void); /* Prototype of our function */
 
 #endif /* MAIN_H */
 
