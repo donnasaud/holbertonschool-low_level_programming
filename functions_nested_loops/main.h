@@ -1,8 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-int _putchar(char c);
-int print_last_digit(int n);
+int _putchar(char c); /* Function to print a character */
+void jack_bauer(void); /* Function prototype */
 
-#endif
+#endif /* MAIN_H */
 
