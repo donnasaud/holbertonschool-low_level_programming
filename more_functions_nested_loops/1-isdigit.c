@@ -8,7 +8,7 @@
  */
 int _isdigit(int c)
 {
-	if (c >= '0' && c <= '9') /* Check if c is between ASCII 48 ('0') and 57 ('9') */
+	if (c >= '0' && c <= '9')
 	{
 		return (1);
 	}
