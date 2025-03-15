@@ -5,13 +5,12 @@
 #include <stdlib.h>
 
 /**
- * struct dog - Structure for a dog's basic info
- * @name: Pointer to the dog's name
+ * struct dog - Structure for a dog's information
+ * @name: Pointer to dog's name
  * @age: Dog's age as a float
- * @owner: Pointer to the owner's name
+ * @owner: Pointer to owner's name
  *
- * Description: This structure stores information about a dog,
- * including its name, age, and owner.
+ * Description: This structure stores the dog's name, age, and owner.
  */
 struct dog
 {
