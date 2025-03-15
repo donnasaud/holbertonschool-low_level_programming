@@ -89,6 +89,7 @@ char *multiply(char *num1, char *num2)
 
 	free(result);
 
+	/* Ensure final_result is dynamically allocated and freed */
 	if (j == 0)
 	{
 		free(final_result);
