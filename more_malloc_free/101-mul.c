@@ -1,39 +1,58 @@
 #include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <ctype.h>
 
-/* Function to check if input is a valid number */
-int is_number(char *str)
+/**
+ * is_number - Checks if a string contains only digits.
+ * @s: The string to check.
+ * Return: 1 if the string is a number, 0 otherwise.
+ */
+int is_number(char *s)
 {
-    while (*str)
+    int i = 0;
+
+    if (!s || s[0] == '\0')
+        return (0);
+    while (s[i])
     {
-        if (!isdigit(*str)) /* Check if it's a digit */
+        if (s[i] < '0' || s[i] > '9')
             return (0);
-        str++;
+        i++;
     }
     return (1);
 }
 
-/* Function to perform string-based multiplication */
+/**
+ * multiply - Multiplies two large numbers stored as strings.
+ * @num1: First number as a string.
+ * @num2: Second number as a string.
+ * Return: Pointer to the resulting product as a string.
+ */
 char *multiply(char *num1, char *num2)
 {
     int len1 = 0, len2 = 0, i, j, carry, n1, n2, sum;
     int *result;
     char *final_result;
 
-    /* Find the lengths of both numbers */
     while (num1[len1])
         len1++;
     while (num2[len2])
         len2++;
 
-    /* Allocate space for the product (max length = len1 + len2) */
+    if ((num1[0] == '0' && num1[1] == '\0') || (num2[0] == '0' && num2[1] == '\0'))
+    {
+        final_result = malloc(2);
+        if (!final_result)
+            return (NULL);
+        final_result[0] = '0';
+        final_result[1] = '\0';
+        return (final_result);
+    }
+
     result = calloc(len1 + len2, sizeof(int));
     if (!result)
         return (NULL);
 
-    /* Multiply each digit from num1 with each digit from num2 */
     for (i = len1 - 1; i >= 0; i--)
     {
         n1 = num1[i] - '0';
@@ -48,7 +67,6 @@ char *multiply(char *num1, char *num2)
         result[i + j + 1] += carry;
     }
 
-    /* Convert integer array to string */
     final_result = malloc(len1 + len2 + 1);
     if (!final_result)
     {
@@ -56,32 +74,34 @@ char *multiply(char *num1, char *num2)
         return (NULL);
     }
 
-    /* Copy the numbers into the final result */
     j = 0;
     for (i = 0; i < len1 + len2; i++)
     {
-        if (!(j == 0 && result[i] == 0)) /* Skip leading zeros */
+        if (!(j == 0 && result[i] == 0))
             final_result[j++] = result[i] + '0';
     }
     final_result[j] = '\0';
 
     free(result);
-    return (j == 0) ? "0" : final_result; /* If result is empty, return "0" */
+    return (j == 0) ? "0" : final_result;
 }
 
-/* Main function to handle input and call multiplication */
+/**
+ * main - Entry point. Multiplies two positive numbers.
+ * @argc: Number of arguments.
+ * @argv: Argument vector (list of arguments).
+ * Return: 0 on success, 98 on failure.
+ */
 int main(int argc, char *argv[])
 {
     char *result;
 
-    /* Ensure exactly 2 arguments are provided */
     if (argc != 3 || !is_number(argv[1]) || !is_number(argv[2]))
     {
         printf("Error\n");
         exit(98);
     }
 
-    /* Perform multiplication */
     result = multiply(argv[1], argv[2]);
     if (!result)
     {
@@ -89,9 +109,10 @@ int main(int argc, char *argv[])
         exit(98);
     }
 
-    /* Print the result */
     printf("%s\n", result);
-    free(result);
+
+    if (result[0] != '0' || result[1] != '\0')
+        free(result);
 
     return (0);
 }
