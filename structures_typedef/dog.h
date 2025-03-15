@@ -1,6 +1,8 @@
 #ifndef DOG_H
 #define DOG_H
 
+#include <stdio.h>
+
 /**
  * struct dog - Structure for a dog
  * @name: Pointer to the dog's name
@@ -11,13 +13,14 @@
  */
 struct dog
 {
-	char *name;
-	float age;
-	char *owner;
+    char *name;
+    float age;
+    char *owner;
 };
 
-/* Function prototype */
+/* Function prototypes */
 void init_dog(struct dog *d, char *name, float age, char *owner);
+void print_dog(struct dog *d); /* Add the prototype */
 
 #endif /* DOG_H */
 
