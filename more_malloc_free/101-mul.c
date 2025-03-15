@@ -8,21 +8,27 @@
  *
  * Return: 1 if the string is a number, 0 otherwise.
  */
+
 int is_number(char *s)
 {
-	int i = 0;
+    int i = 0;
 
-	if (!s || s[0] == '\0')
-		return (0);
+    if (!s || s[0] == '\0')
+        return (0);
 
-	while (s[i])
-	{
-		if (s[i] < '0' || s[i] > '9')
-			return (0);
-		i++;
-	}
-	return (1);
+    /* Check for leading zeros */
+    if (s[0] == '0' && s[1] != '\0')
+        return (0);
+
+    while (s[i])
+    {
+        if (s[i] < '0' || s[i] > '9')
+            return (0);
+        i++;
+    }
+    return (1);
 }
+
 
 /**
  * multiply - Multiplies two large numbers stored as strings.
