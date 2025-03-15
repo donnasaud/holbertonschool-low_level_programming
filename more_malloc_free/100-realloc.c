@@ -33,9 +33,11 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 	if (new_ptr == NULL)
 		return (NULL);
 
-	/* Copy the content from old block to new block (up to min(old_size, new_size)) */
+	/* Copy content from old memory block to new block (min(old_size, new_size)) */
 	for (i = 0; i < old_size && i < new_size; i++)
+	{
 		new_ptr[i] = ((char *)ptr)[i];
+	}
 
 	/* Free old memory */
 	free(ptr);
