@@ -8,27 +8,21 @@
  *
  * Return: 1 if the string is a number, 0 otherwise.
  */
-
 int is_number(char *s)
 {
-    int i = 0;
+	int i = 0;
 
-    if (!s || s[0] == '\0')
-        return (0);
+	if (!s || s[0] == '\0')
+		return (0);
 
-    /* Check for leading zeros */
-    if (s[0] == '0' && s[1] != '\0')
-        return (0);
-
-    while (s[i])
-    {
-        if (s[i] < '0' || s[i] > '9')
-            return (0);
-        i++;
-    }
-    return (1);
+	while (s[i])
+	{
+		if (s[i] < '0' || s[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
 }
-
 
 /**
  * multiply - Multiplies two large numbers stored as strings.
@@ -95,7 +89,6 @@ char *multiply(char *num1, char *num2)
 
 	free(result);
 
-	/* Ensure final_result is dynamically allocated and freed */
 	if (j == 0)
 	{
 		free(final_result);
@@ -134,8 +127,6 @@ int main(int argc, char *argv[])
 	}
 
 	printf("%s\n", result);
-
-	/* Free allocated memory */
 	free(result);
 
 	return (0);
