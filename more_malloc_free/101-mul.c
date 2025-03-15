@@ -39,7 +39,6 @@ char *multiply(char *num1, char *num2)
 	while (num2[len2])
 		len2++;
 
-	/* Handle multiplication by zero */
 	if ((num1[0] == '0' && num1[1] == '\0') ||
 	    (num2[0] == '0' && num2[1] == '\0'))
 	{
@@ -85,7 +84,7 @@ char *multiply(char *num1, char *num2)
 	final_result[j] = '\0';
 
 	free(result);
-	return (j == 0) ? "0" : final_result;
+	return (final_result);
 }
 
 /**
@@ -112,10 +111,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("%s\n", result);
-
-	/* Free allocated memory */
-	if (result[0] != '0' || result[1] != '\0')
-		free(result);
+	free(result);
 
 	return (0);
 }
