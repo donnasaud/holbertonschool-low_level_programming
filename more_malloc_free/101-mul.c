@@ -88,7 +88,18 @@ char *multiply(char *num1, char *num2)
 	final_result[j] = '\0';
 
 	free(result);
-	return ((j == 0) ? "0" : final_result);
+
+	if (j == 0)
+	{
+		free(final_result);
+		final_result = malloc(2);
+		if (!final_result)
+			return (NULL);
+		final_result[0] = '0';
+		final_result[1] = '\0';
+	}
+
+	return (final_result);
 }
 
 /**
@@ -118,10 +129,8 @@ int main(int argc, char *argv[])
 	printf("%s\n", result);
 
 	/* Free allocated memory */
-	if (result[0] != '0' || result[1] != '\0')
-		free(result);
+	free(result);
 
 	return (0);
 }
-
 
