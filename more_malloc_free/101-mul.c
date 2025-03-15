@@ -5,6 +5,7 @@
 /**
  * is_number - Checks if a string contains only digits.
  * @s: The string to check.
+ *
  * Return: 1 if the string is a number, 0 otherwise.
  */
 int is_number(char *s)
@@ -13,6 +14,7 @@ int is_number(char *s)
 
 	if (!s || s[0] == '\0')
 		return (0);
+
 	while (s[i])
 	{
 		if (s[i] < '0' || s[i] > '9')
@@ -26,6 +28,7 @@ int is_number(char *s)
  * multiply - Multiplies two large numbers stored as strings.
  * @num1: First number as a string.
  * @num2: Second number as a string.
+ *
  * Return: Pointer to the resulting product as a string.
  */
 char *multiply(char *num1, char *num2)
@@ -39,6 +42,7 @@ char *multiply(char *num1, char *num2)
 	while (num2[len2])
 		len2++;
 
+	/* Handle multiplication by zero */
 	if ((num1[0] == '0' && num1[1] == '\0') ||
 	    (num2[0] == '0' && num2[1] == '\0'))
 	{
@@ -84,13 +88,14 @@ char *multiply(char *num1, char *num2)
 	final_result[j] = '\0';
 
 	free(result);
-	return (final_result);
+	return ((j == 0) ? "0" : final_result);
 }
 
 /**
  * main - Entry point. Multiplies two positive numbers.
  * @argc: Number of arguments.
  * @argv: Argument vector (list of arguments).
+ *
  * Return: 0 on success, 98 on failure.
  */
 int main(int argc, char *argv[])
@@ -111,7 +116,10 @@ int main(int argc, char *argv[])
 	}
 
 	printf("%s\n", result);
-	free(result);
+
+	/* Free allocated memory */
+	if (result[0] != '0' || result[1] != '\0')
+		free(result);
 
 	return (0);
 }
