@@ -1,18 +1,20 @@
 section .data
-    hello_msg db "Hello, World", 10
-    msg_len equ $ - hello_msg
+    ; Define the string to be printed
+    message db 'Hello, World', 0xA  ; 0xA is the newline character
+    len equ $ - message            ; Calculate the length of the string
 
 section .text
-    global _start
+    global _start                  ; Entry point for the program
 
 _start:
-    mov rax, 1          ; syscall: write
-    mov rdi, 1          ; stdout
-    mov rsi, hello_msg  ; message address
-    mov rdx, msg_len    ; message length
-    syscall
+    ; System call: write(1, message, len)
+    mov rax, 1                     ; syscall number for write (1)
+    mov rdi, 1                     ; file descriptor (1 = stdout)
+    mov rsi, message               ; pointer to the message
+    mov rdx, len                   ; length of the message
+    syscall                        ; invoke the system call
 
-    mov rax, 60         ; syscall: exit
-    xor rdi, rdi        ; status: 0
-    syscall
-
+    ; System call: exit(0)
+    mov rax, 60                    ; syscall number for exit (60)
+    xor rdi, rdi                   ; exit code (0)
+    syscall                        ; invoke the system call
