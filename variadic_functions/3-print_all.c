@@ -37,7 +37,8 @@ void print_all(const char * const format, ...)
 					break;
 				case 's':
 					str = va_arg(args, char *);
-					str = (str == NULL) ? "(nil)" : str; /* 2nd allowed if (ternary counts as if) */
+					if (str == NULL) /* 2nd allowed if */
+						str = "(nil)";
 					printf("%s%s", sep, str);
 					break;
 				default:
