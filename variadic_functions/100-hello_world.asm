@@ -1,18 +1,20 @@
-section .data
-    msg db "Hello, World", 10
-    len equ $ - msg
+global _start
 
 section .text
-    global _start
-
 _start:
-    mov eax, 4          ; sys_write
-    mov ebx, 1          ; file descriptor: stdout
-    mov ecx, msg        ; pointer to message
-    mov edx, len        ; message length
-    int 0x80            ; call kernel
+    ; sys_write syscall
+    mov rax, 1          ; syscall number for write
+    mov rdi, 1          ; stdout file descriptor
+    mov rsi, msg        ; address of the message
+    mov rdx, len        ; message length
+    syscall
 
-    mov eax, 1          ; sys_exit
-    xor ebx, ebx        ; return 0
-    int 0x80
+    ; sys_exit syscall
+    mov rax, 60         ; syscall number for exit
+    xor rdi, rdi        ; exit code 0
+    syscall
+
+section .rodata
+msg: db "Hello, World", 10  ; "Hello, World" + newline (ASCII 10)
+len: equ $ - msg            ; calculate message length
 
