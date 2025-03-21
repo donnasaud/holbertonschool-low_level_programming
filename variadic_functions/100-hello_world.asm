@@ -1,20 +1,20 @@
-global _start
+global main      ; Changed from _start
 
 section .text
-_start:
+main:
     ; sys_write syscall
-    mov rax, 1          ; syscall number for write
-    mov rdi, 1          ; stdout file descriptor
-    mov rsi, msg        ; address of the message
-    mov rdx, len        ; message length
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg
+    mov rdx, len
     syscall
 
     ; sys_exit syscall
-    mov rax, 60         ; syscall number for exit
-    xor rdi, rdi        ; exit code 0
+    mov rax, 60
+    xor rdi, rdi
     syscall
 
 section .rodata
-msg: db "Hello, World", 10  ; "Hello, World" + newline (ASCII 10)
-len: equ $ - msg            ; calculate message length
+msg: db "Hello, World", 10
+len: equ $ - msg
 
