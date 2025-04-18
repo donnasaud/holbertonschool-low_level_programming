@@ -47,15 +47,12 @@ uint64_t swap64(uint64_t val)
 }
 
 /**
- * print_elf_header - Print ELF header info
+ * print_ident - Print ELF magic, class, data, version, OS/ABI
  * @header: pointer to ELF header
  */
-void print_elf_header(Elf64_Ehdr *header)
+void print_ident(Elf64_Ehdr *header)
 {
 	int i;
-	int is_big_endian;
-	unsigned short e_type;
-	uint64_t e_entry;
 
 	printf("ELF Header:\n");
 	printf("  Magic:   ");
@@ -118,6 +115,17 @@ void print_elf_header(Elf64_Ehdr *header)
 
 	printf("  ABI Version:                       %d\n",
 	       header->e_ident[EI_ABIVERSION]);
+}
+
+/**
+ * print_type_entry - Print ELF type and entry point
+ * @header: pointer to ELF header
+ */
+void print_type_entry(Elf64_Ehdr *header)
+{
+	int is_big_endian;
+	unsigned short e_type;
+	uint64_t e_entry;
 
 	is_big_endian = (header->e_ident[EI_DATA] == ELFDATA2MSB);
 	e_type = header->e_type;
@@ -162,7 +170,17 @@ void print_elf_header(Elf64_Ehdr *header)
 }
 
 /**
- * main - Entry point, displays ELF header
+ * print_elf_header - Wrapper function to print all ELF fields
+ * @header: pointer to ELF header
+ */
+void print_elf_header(Elf64_Ehdr *header)
+{
+	print_ident(header);
+	print_type_entry(header);
+}
+
+/**
+ * main - Entry point
  * @argc: argument count
  * @argv: argument vector
  * Return: 0 on success, 98 on error
