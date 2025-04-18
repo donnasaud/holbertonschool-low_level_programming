@@ -1,150 +1,229 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "elf.h"
 #include <fcntl.h>
 #include <unistd.h>
-#include <elf.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdint.h>
 #include <string.h>
-#include <stdint.h> /* for uint64_t */
+#include <errno.h>
 
-/* Byte swapping */
-unsigned short swap16(unsigned short val)
+/**
+ * swap16 - Swap endianness of a 16-bit integer
+ * @val: value to swap
+ * Return: swapped value
+ */
+uint16_t swap16(uint16_t val)
 {
-	return (val << 8) | (val >> 8);
+	return ((val << 8) | (val >> 8));
 }
 
-uint32_t swap32(uint32_t val)
-{
-	return ((val >> 24) & 0xff) |
-	       ((val << 8) & 0xff0000) |
-	       ((val >> 8) & 0xff00) |
-	       ((val << 24) & 0xff000000);
-}
-
+/**
+ * swap64 - Swap endianness of a 64-bit integer
+ * @val: value to swap
+ * Return: swapped value
+ */
 uint64_t swap64(uint64_t val)
 {
-	return ((val >> 56) & 0xff) |
-	       ((val << 40) & 0xff000000000000) |
-	       ((val << 24) & 0xff0000000000) |
-	       ((val << 8)  & 0xff00000000) |
-	       ((val >> 8)  & 0xff000000) |
-	       ((val >> 24) & 0xff0000) |
-	       ((val >> 40) & 0xff00) |
-	       ((val << 56) & 0xff00000000000000);
+	return ((val << 56) |
+		((val & 0xFF00) << 40) |
+		((val & 0xFF0000) << 24) |
+		((val & 0xFF000000) << 8) |
+		((val & 0xFF00000000) >> 8) |
+		((val & 0xFF0000000000) >> 24) |
+		((val & 0xFF000000000000) >> 40) |
+		(val >> 56));
 }
 
-/* Print ELF header */
-void print_elf_header(Elf64_Ehdr *header)
+/**
+ * print_error - Print error and exit
+ * @msg: Error message
+ */
+void print_error(const char *msg)
+{
+	fprintf(stderr, "Error: %s\n", msg);
+	exit(98);
+}
+
+/**
+ * print_magic - Print ELF magic bytes
+ * @e_ident: ELF identification array
+ */
+void print_magic(unsigned char *e_ident)
 {
 	int i;
-	int is_big_endian;
-	unsigned short e_type;
-	uint64_t e_entry;
 
-	printf("ELF Header:\n");
-	printf("  Magic:   ");
+	printf("ELF Header:\n  Magic:   ");
 	for (i = 0; i < EI_NIDENT; i++)
-		printf("%02x%c", header->e_ident[i], i < EI_NIDENT - 1 ? ' ' : '\n');
+	{
+		printf("%02x", e_ident[i]);
+		if (i < EI_NIDENT - 1)
+			printf(" ");
+	}
+	printf("\n");
+}
 
+/**
+ * print_class - Print ELF class
+ * @e_ident: ELF identification array
+ */
+void print_class(unsigned char *e_ident)
+{
 	printf("  Class:                             ");
-	switch (header->e_ident[EI_CLASS])
-	{
-		case ELFCLASS32: printf("ELF32\n"); break;
-		case ELFCLASS64: printf("ELF64\n"); break;
-		default: printf("<unknown: %x>\n", header->e_ident[EI_CLASS]);
-	}
-
-	printf("  Data:                              ");
-	switch (header->e_ident[EI_DATA])
-	{
-		case ELFDATA2LSB: printf("2's complement, little endian\n"); break;
-		case ELFDATA2MSB: printf("2's complement, big endian\n"); break;
-		default: printf("<unknown: %x>\n", header->e_ident[EI_DATA]);
-	}
-
-	printf("  Version:                           ");
-	if (header->e_ident[EI_VERSION] == EV_CURRENT)
-		printf("1 (current)\n");
+	if (e_ident[EI_CLASS] == ELFCLASS32)
+		printf("ELF32\n");
+	else if (e_ident[EI_CLASS] == ELFCLASS64)
+		printf("ELF64\n");
 	else
-		printf("%d\n", header->e_ident[EI_VERSION]);
+		printf("<unknown: %x>\n", e_ident[EI_CLASS]);
+}
 
+/**
+ * print_data - Print ELF data encoding
+ * @e_ident: ELF identification array
+ */
+void print_data(unsigned char *e_ident)
+{
+	printf("  Data:                              ");
+	if (e_ident[EI_DATA] == ELFDATA2LSB)
+		printf("2's complement, little endian\n");
+	else if (e_ident[EI_DATA] == ELFDATA2MSB)
+		printf("2's complement, big endian\n");
+	else
+		printf("<unknown: %x>\n", e_ident[EI_DATA]);
+}
+
+/**
+ * print_version - Print ELF version
+ * @e_ident: ELF identification array
+ */
+void print_version(unsigned char *e_ident)
+{
+	printf("  Version:                           %d", e_ident[EI_VERSION]);
+	if (e_ident[EI_VERSION] == EV_CURRENT)
+		printf(" (current)\n");
+	else
+		printf("\n");
+}
+
+/**
+ * print_osabi - Print ELF OS/ABI
+ * @e_ident: ELF identification array
+ */
+void print_osabi(unsigned char *e_ident)
+{
 	printf("  OS/ABI:                            ");
-	switch (header->e_ident[EI_OSABI])
+	switch (e_ident[EI_OSABI])
 	{
-		case ELFOSABI_SYSV: printf("UNIX - System V\n"); break;
-		case ELFOSABI_NETBSD: printf("UNIX - NetBSD\n"); break;
-		case ELFOSABI_SOLARIS: printf("UNIX - Solaris\n"); break;
-		default: printf("<unknown: %x>\n", header->e_ident[EI_OSABI]);
+	case ELFOSABI_SYSV:
+		printf("UNIX - System V\n");
+		break;
+	case ELFOSABI_NETBSD:
+		printf("UNIX - NetBSD\n");
+		break;
+	case ELFOSABI_SOLARIS:
+		printf("UNIX - Solaris\n");
+		break;
+	default:
+		printf("<unknown: %x>\n", e_ident[EI_OSABI]);
 	}
+}
 
-	printf("  ABI Version:                       %d\n", header->e_ident[EI_ABIVERSION]);
+/**
+ * print_abiversion - Print ELF ABI version
+ * @e_ident: ELF identification array
+ */
+void print_abiversion(unsigned char *e_ident)
+{
+	printf("  ABI Version:                       %d\n", e_ident[EI_ABIVERSION]);
+}
 
-	is_big_endian = (header->e_ident[EI_DATA] == ELFDATA2MSB);
-	e_type = header->e_type;
-	e_entry = header->e_entry;
-
+/**
+ * print_type - Print ELF file type
+ * @e_type: File type
+ * @is_big_endian: 1 if file is big endian
+ */
+void print_type(uint16_t e_type, int is_big_endian)
+{
 	if (is_big_endian)
-	{
 		e_type = swap16(e_type);
-		if (header->e_ident[EI_CLASS] == ELFCLASS32)
-			e_entry = swap32((uint32_t)e_entry);
-		else
-			e_entry = swap64(e_entry);
-	}
 
 	printf("  Type:                              ");
 	switch (e_type)
 	{
-		case ET_NONE: printf("NONE (None)\n"); break;
-		case ET_REL: printf("REL (Relocatable file)\n"); break;
-		case ET_EXEC: printf("EXEC (Executable file)\n"); break;
-		case ET_DYN: printf("DYN (Shared object file)\n"); break;
-		case ET_CORE: printf("CORE (Core file)\n"); break;
-		default: printf("<unknown: %x>\n", e_type);
+	case ET_EXEC:
+		printf("EXEC (Executable file)\n");
+		break;
+	case ET_DYN:
+		printf("DYN (Shared object file)\n");
+		break;
+	case ET_REL:
+		printf("REL (Relocatable file)\n");
+		break;
+	default:
+		printf("<unknown: %x>\n", e_type);
 	}
-
-	printf("  Entry point address:               ");
-	if (header->e_ident[EI_CLASS] == ELFCLASS32)
-		printf("%#x\n", (unsigned int)e_entry);
-	else
-		printf("%#lx\n", (unsigned long)e_entry);
 }
 
-/* Main function */
-int main(int argc, char *argv[])
+/**
+ * print_entry - Print ELF entry point
+ * @e_entry: Entry point
+ * @is_big_endian: 1 if file is big endian
+ * @elf_class: ELF class
+ */
+void print_entry(uint64_t e_entry, int is_big_endian, int elf_class)
+{
+	if (is_big_endian)
+		e_entry = swap64(e_entry);
+
+	printf("  Entry point address:               ");
+	if (elf_class == ELFCLASS32)
+		printf("0x%x\n", (uint32_t)e_entry);
+	else
+		printf("0x%lx\n", e_entry);
+}
+
+/**
+ * main - Displays the ELF header info
+ * @argc: Argument count
+ * @argv: Argument vector
+ * Return: 0 on success, exits with 98 on failure
+ */
+int main(int argc, char **argv)
 {
 	int fd;
 	ssize_t bytes_read;
 	Elf64_Ehdr header;
 
 	if (argc != 2)
-	{
-		fprintf(stderr, "Usage: %s <ELF file>\n", argv[0]);
-		exit(98);
-	}
+		print_error("Usage: elf_header elf_filename");
 
 	fd = open(argv[1], O_RDONLY);
-	if (fd == -1)
-	{
-		perror("Error opening file");
-		exit(98);
-	}
+	if (fd < 0)
+		print_error(strerror(errno));
 
 	bytes_read = read(fd, &header, sizeof(header));
 	if (bytes_read != sizeof(header))
 	{
-		fprintf(stderr, "Error reading ELF header\n");
 		close(fd);
-		exit(98);
+		print_error("Failed to read ELF header");
 	}
 
 	if (memcmp(header.e_ident, ELFMAG, SELFMAG) != 0)
 	{
-		fprintf(stderr, "Error: Not an ELF file\n");
 		close(fd);
-		exit(98);
+		print_error("Not an ELF file");
 	}
 
-	print_elf_header(&header);
+	print_magic(header.e_ident);
+	print_class(header.e_ident);
+	print_data(header.e_ident);
+	print_version(header.e_ident);
+	print_osabi(header.e_ident);
+	print_abiversion(header.e_ident);
+	print_type(header.e_type, header.e_ident[EI_DATA] == ELFDATA2MSB);
+	print_entry(header.e_entry, header.e_ident[EI_DATA] == ELFDATA2MSB,
+		header.e_ident[EI_CLASS]);
+
 	close(fd);
 	return (0);
 }
