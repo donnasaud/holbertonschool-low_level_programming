@@ -11,11 +11,11 @@ void rev_string(char *s)
 
 	/* Find the length of the string */
 	while (s[i] != '\0')
-		i--;
+		i++;
 
-	i--; /* Move to the last valid character (not '\0') */
+	i--; /* Point to the last character of the string */
 
-	/* Swap characters from start to end */
+	/* Swap characters from both ends toward the center */
 	for (j = 0; j < i; j++, i--)
 	{
 		temp = s[j];
