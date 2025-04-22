@@ -9,23 +9,21 @@
  */
 char *_strcat(char *dest, char *src)
 {
-    int i = 0, j = 0;
+	int i = 0;
+	int j = 0;
 
-    /* Find the end of dest */
-    while (dest[i] != '\0')
-        i++;
+	while (dest[i] != '\0')
+		i++;
 
-    /* Copy src to dest */
-    while (src[j] != '\0')
-    {
-        dest[i] = src[j];
-        i++;
-        j++;
-    }
+	while (src[j] != '\0')
+	{
+		dest[i] = src[j];
+		i++;
+		j++;
+	}
 
-    /* Add null terminator */
-    dest[i] = '\0';
+	dest[i] = '\0';
 
-    return (dest);
+	return (dest);
 }
 
