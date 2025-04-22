@@ -1,5 +1,4 @@
 #include "main.h"
-#include <stdio.h>  /* For testing purposes */
 
 /**
  * _strcat - Concatenates two strings
@@ -12,9 +11,11 @@ char *_strcat(char *dest, char *src)
 {
     int i = 0, j = 0;
 
+    /* Find the end of dest */
     while (dest[i] != '\0')
         i++;
 
+    /* Copy src to dest */
     while (src[j] != '\0')
     {
         dest[i] = src[j];
@@ -22,27 +23,9 @@ char *_strcat(char *dest, char *src)
         j++;
     }
 
+    /* Add null terminator */
     dest[i] = '\0';
 
     return (dest);
-}
-
-/* Temporary main function for testing */
-int main(void)
-{
-    char s1[98] = "Hello ";
-    char s2[] = "World!\n";
-    char *ptr;
-
-    printf("%s\n", s1);
-    printf("%s", s2);
-
-    ptr = _strcat(s1, s2);
-
-    printf("%s", s1);
-    printf("%s", s2);
-    printf("%s", ptr);
-
-    return (0);
 }
 
